@@ -3,49 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Youve Been Beans'd!</title>
+    <title>Beans'd!</title>
     <style>
-        /* Rapid rainbow background: 7 colors at 2 per second = 3.5s total loop */
+        /* 6 color transitions. 3 seconds total = exactly 2 colors per second. */
         @keyframes rainbow-bg {
             0%   { background-color: #FF0000; } /* Red */
-            14%  { background-color: #FF7F00; } /* Orange */
-            28%  { background-color: #FFFF00; } /* Yellow */
-            42%  { background-color: #00FF00; } /* Green */
-            57%  { background-color: #0000FF; } /* Blue */
-            71%  { background-color: #4B0082; } /* Indigo */
-            85%  { background-color: #9400D3; } /* Violet */
+            16.6% { background-color: #FF7F00; } /* Orange */
+            33.3% { background-color: #FFFF00; } /* Yellow */
+            50%  { background-color: #00FF00; } /* Green */
+            66.6% { background-color: #0000FF; } /* Blue */
+            83.3% { background-color: #8B00FF; } /* Violet */
             100% { background-color: #FF0000; } /* Red */
         }
 
         body {
             margin: 0;
-            overflow: hidden; /* Keeps the text from creating scrollbars */
+            overflow: hidden;
             height: 100vh;
             width: 100vw;
-            animation: rainbow-bg 3.5s infinite linear;
+            animation: rainbow-bg 3s infinite linear;
         }
 
-        /* The container that bounces around the screen */
+        /* The invisible safe zone that bounces off the walls */
         #bouncer {
             position: absolute;
-            white-space: nowrap;
-            /* Give it a little padding so the spinning text doesn't clip the screen edges */
-            padding: 2rem; 
+            width: 450px; 
+            height: 450px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* The spinning text itself */
+        /* The spinning text */
         @keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
 
         #spinner {
-            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            font-family: "Comic Sans MS", "Comic Sans", sans-serif;
             font-size: 3rem;
             font-weight: bold;
             color: white;
-            text-shadow: 3px 3px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; /* Makes it legible on the bright background */
-            animation: spin 2s infinite linear;
+            white-space: nowrap;
+            /* Black outline to ensure readability against bright colors */
+            text-shadow: 3px 3px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+            animation: spin 5s infinite linear; /* Slowed down the spin */
         }
     </style>
 </head>
@@ -57,37 +60,39 @@
 
     <script>
         const bouncer = document.getElementById('bouncer');
+        const boxSize = 450;
         
-        // Random starting position
-        let x = Math.random() * (window.innerWidth - 300);
-        let y = Math.random() * (window.innerHeight - 150);
+        // Start somewhere random, keeping the safe zone box in bounds
+        let x = Math.random() * (window.innerWidth - boxSize);
+        let y = Math.random() * (window.innerHeight - boxSize);
         
-        // Movement speed
-        let dx = 4;
-        let dy = 4;
+        // Slower movement speed (changed from 4 to 2)
+        let dx = 2;
+        let dy = 2;
 
         function animateBouncing() {
-            const rect = bouncer.getBoundingClientRect();
-            
-            // Check right and left walls
-            if (x + rect.width >= window.innerWidth) {
-                x = window.innerWidth - rect.width;
-                dx = -dx; // Reverse horizontal direction
+            // Recalculate max bounds continuously in case the window is resized
+            const maxX = window.innerWidth - boxSize;
+            const maxY = window.innerHeight - boxSize;
+
+            // X-axis wall collisions
+            if (x >= maxX) {
+                x = maxX;
+                dx = -Math.abs(dx); // Force left
             } else if (x <= 0) {
                 x = 0;
-                dx = -dx;
+                dx = Math.abs(dx);  // Force right
             }
             
-            // Check bottom and top walls
-            if (y + rect.height >= window.innerHeight) {
-                y = window.innerHeight - rect.height;
-                dy = -dy; // Reverse vertical direction
+            // Y-axis wall collisions
+            if (y >= maxY) {
+                y = maxY;
+                dy = -Math.abs(dy); // Force up
             } else if (y <= 0) {
                 y = 0;
-                dy = -dy;
+                dy = Math.abs(dy);  // Force down
             }
 
-            // Apply movement
             x += dx;
             y += dy;
 
@@ -97,7 +102,7 @@
             requestAnimationFrame(animateBouncing);
         }
 
-        // Kick off the animation
+        // Start the DVD bounce loop
         animateBouncing();
     </script>
 </body>
