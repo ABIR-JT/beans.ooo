@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beans'd!</title>
+    <style>
+        /* 6 color transitions. 3 seconds total = exactly 2 colors per second. */
+        @keyframes rainbow-bg {
+            0%   { background-color: #FF0000; } /* Red */
+            16.6% { background-color: #FF7F00; } /* Orange */
+            33.3% { background-color: #FFFF00; } /* Yellow */
+            50%  { background-color: #00FF00; } /* Green */
+            66.6% { background-color: #0000FF; } /* Blue */
+            83.3% { background-color: #8B00FF; } /* Violet */
+            100% { background-color: #FF0000; } /* Red */
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            animation: rainbow-bg 3s infinite linear;
+        }
+
+        /* The invisible safe zone that bounces off the walls */
+        #bouncer {
+            position: absolute;
+            width: 450px; 
+            height: 450px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* The spinning text */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        #spinner {
+            font-family: "Comic Sans MS", "Comic Sans", sans-serif;
+            font-size: 3rem;
+            font-weight: bold;
+            color: white;
+            white-space: nowrap;
+            /* Black outline to ensure readability against bright colors */
+            text-shadow: 3px 3px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+            animation: spin 5s infinite linear; /* Slowed down the spin */
+        }
+    </style>
+</head>
+<body>
+
+    <div id="bouncer">
+        <div id="spinner">you've been beans'd</div>
+    </div>
+
+    <script>
+        const bouncer = document.getElementById('bouncer');
+        const boxSize = 450;
+        
+        // Start somewhere random, keeping the safe zone box in bounds
+        let x = Math.random() * (window.innerWidth - boxSize);
+        let y = Math.random() * (window.innerHeight - boxSize);
+        
+        // Slower movement speed (changed from 4 to 2)
+        let dx = 2;
+        let dy = 2;
+
+        function animateBouncing() {
+            // Recalculate max bounds continuously in case the window is resized
+            const maxX = window.innerWidth - boxSize;
+            const maxY = window.innerHeight - boxSize;
+
+            // X-axis wall collisions
+            if (x >= maxX) {
+                x = maxX;
+                dx = -Math.abs(dx); // Force left
+            } else if (x <= 0) {
+                x = 0;
+                dx = Math.abs(dx);  // Force right
+            }
+            
+            // Y-axis wall collisions
+            if (y >= maxY) {
+                y = maxY;
+                dy = -Math.abs(dy); // Force up
+            } else if (y <= 0) {
+                y = 0;
+                dy = Math.abs(dy);  // Force down
+            }
+
+            x += dx;
+            y += dy;
+
+            bouncer.style.left = x + 'px';
+            bouncer.style.top = y + 'px';
+
+            requestAnimationFrame(animateBouncing);
+        }
+
+        // Start the DVD bounce loop
+        animateBouncing();
+    </script>
+</body>
+</html>
