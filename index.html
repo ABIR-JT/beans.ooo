@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Youve Been Beans'd!</title>
+    <style>
+        /* Rapid rainbow background: 7 colors at 2 per second = 3.5s total loop */
+        @keyframes rainbow-bg {
+            0%   { background-color: #FF0000; } /* Red */
+            14%  { background-color: #FF7F00; } /* Orange */
+            28%  { background-color: #FFFF00; } /* Yellow */
+            42%  { background-color: #00FF00; } /* Green */
+            57%  { background-color: #0000FF; } /* Blue */
+            71%  { background-color: #4B0082; } /* Indigo */
+            85%  { background-color: #9400D3; } /* Violet */
+            100% { background-color: #FF0000; } /* Red */
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden; /* Keeps the text from creating scrollbars */
+            height: 100vh;
+            width: 100vw;
+            animation: rainbow-bg 3.5s infinite linear;
+        }
+
+        /* The container that bounces around the screen */
+        #bouncer {
+            position: absolute;
+            white-space: nowrap;
+            /* Give it a little padding so the spinning text doesn't clip the screen edges */
+            padding: 2rem; 
+        }
+
+        /* The spinning text itself */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        #spinner {
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            font-size: 3rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 3px 3px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; /* Makes it legible on the bright background */
+            animation: spin 2s infinite linear;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="bouncer">
+        <div id="spinner">you've been beans'd</div>
+    </div>
+
+    <script>
+        const bouncer = document.getElementById('bouncer');
+        
+        // Random starting position
+        let x = Math.random() * (window.innerWidth - 300);
+        let y = Math.random() * (window.innerHeight - 150);
+        
+        // Movement speed
+        let dx = 4;
+        let dy = 4;
+
+        function animateBouncing() {
+            const rect = bouncer.getBoundingClientRect();
+            
+            // Check right and left walls
+            if (x + rect.width >= window.innerWidth) {
+                x = window.innerWidth - rect.width;
+                dx = -dx; // Reverse horizontal direction
+            } else if (x <= 0) {
+                x = 0;
+                dx = -dx;
+            }
+            
+            // Check bottom and top walls
+            if (y + rect.height >= window.innerHeight) {
+                y = window.innerHeight - rect.height;
+                dy = -dy; // Reverse vertical direction
+            } else if (y <= 0) {
+                y = 0;
+                dy = -dy;
+            }
+
+            // Apply movement
+            x += dx;
+            y += dy;
+
+            bouncer.style.left = x + 'px';
+            bouncer.style.top = y + 'px';
+
+            requestAnimationFrame(animateBouncing);
+        }
+
+        // Kick off the animation
+        animateBouncing();
+    </script>
+</body>
+</html>
