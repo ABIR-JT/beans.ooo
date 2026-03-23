@@ -63,34 +63,97 @@
         const boxSize = 450;
         
         // Start somewhere random, keeping the safe zone box in bounds
-        let x = Math.random() * (window.innerWidth - boxSize);
-        let y = Math.random() * (window.innerHeight - boxSize);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>you've been beans'd</title>
+    <style>
+        @keyframes rainbow-bg {
+            0%   { background-color: #FF0000; }
+            16.6% { background-color: #FF7F00; }
+            33.3% { background-color: #FFFF00; }
+            50%  { background-color: #00FF00; }
+            66.6% { background-color: #0000FF; }
+            83.3% { background-color: #8B00FF; }
+            100% { background-color: #FF0000; }
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            animation: rainbow-bg 3s infinite linear;
+        }
+
+        /* Responsive safe zone box for mobile and desktop */
+        #bouncer {
+            position: absolute;
+            width: clamp(250px, 80vw, 450px); 
+            height: clamp(250px, 80vw, 450px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive spinning text */
+        #spinner {
+            font-family: "Comic Sans MS", "Comic Sans", sans-serif;
+            font-size: clamp(1.5rem, 6vw, 3rem);
+            font-weight: bold;
+            color: white;
+            white-space: nowrap;
+            text-shadow: 3px 3px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+            animation: spin 5s infinite linear;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="bouncer">
+        <div id="spinner">you've been beans'd</div>
+    </div>
+
+    <audio id="bg-audio" src="beans_d.mp3" autoplay loop></audio>
+
+    <script>
+        const bouncer = document.getElementById('bouncer');
         
-        // Slower movement speed (changed from 4 to 2)
+        // Start somewhere random
+        let x = Math.random() * (window.innerWidth - bouncer.offsetWidth);
+        let y = Math.random() * (window.innerHeight - bouncer.offsetHeight);
+        
         let dx = 2;
         let dy = 2;
 
         function animateBouncing() {
-            // Recalculate max bounds continuously in case the window is resized
-            const maxX = window.innerWidth - boxSize;
-            const maxY = window.innerHeight - boxSize;
+            const maxX = window.innerWidth - bouncer.offsetWidth;
+            const maxY = window.innerHeight - bouncer.offsetHeight;
 
             // X-axis wall collisions
             if (x >= maxX) {
                 x = maxX;
-                dx = -Math.abs(dx); // Force left
+                dx = -Math.abs(dx);
             } else if (x <= 0) {
                 x = 0;
-                dx = Math.abs(dx);  // Force right
+                dx = Math.abs(dx);
             }
             
             // Y-axis wall collisions
             if (y >= maxY) {
                 y = maxY;
-                dy = -Math.abs(dy); // Force up
+                dy = -Math.abs(dy);
             } else if (y <= 0) {
                 y = 0;
-                dy = Math.abs(dy);  // Force down
+                dy = Math.abs(dy);
             }
 
             x += dx;
@@ -102,8 +165,13 @@
             requestAnimationFrame(animateBouncing);
         }
 
-        // Start the DVD bounce loop
+        // Kick off the visual animation immediately
         animateBouncing();
+
+        // A fallback: If autoplay is blocked, start the audio the first time they click ANYWHERE on the chaotic screen
+        document.body.addEventListener('click', () => {
+            document.getElementById('bg-audio').play().catch(e => console.log("Audio still blocked"));
+        }, { once: true });
     </script>
 </body>
 </html>
